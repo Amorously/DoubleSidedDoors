@@ -10,7 +10,7 @@ namespace DSD;
 
 /* TODO:
  * Flipped blood/scream doors
- * Try setup for ProgressionPuzzleToEnter types
+ * Try setup for some ProgressionPuzzleToEnter types
  * Doors interactable on both sides
 */
 
