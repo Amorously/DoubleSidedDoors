@@ -31,6 +31,7 @@ internal sealed class EntryPoint : BasePlugin
 
     private void OnStartupAssetsLoaded()
     {
+        RuntimeHelpers.RunClassConstructor(typeof(Configuration).TypeHandle);
         RuntimeHelpers.RunClassConstructor(typeof(DoorConfigManager).TypeHandle);
     }
 }
