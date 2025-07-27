@@ -1,20 +1,20 @@
 ﻿using HarmonyLib;
 using LevelGeneration;
 using UnityEngine;
-using static DoubleSidedDoors.Module.SharedDoorData;
+using static DSD.Module.DoorConfigManager;
 
-namespace DoubleSidedDoors.Module.Patches;
+namespace DSD.Patches;
 
-[HarmonyPatch]
-internal static class Patch_SecurityDoor
+[HarmonyPatch(typeof(LG_SecurityDoor), nameof(LG_SecurityDoor.Setup))]
+internal static class SecurityDoorSetupPatch
 {
-    [HarmonyPatch(typeof(LG_SecurityDoor), nameof(LG_SecurityDoor.Setup))]
     [HarmonyPostfix]
+    [HarmonyWrapSafe]
     private static void SecDoor_Setup(LG_SecurityDoor __instance, LG_Gate gate)
     {
-        if (__instance.m_securityDoorType != eSecurityDoorType.Security) return;
+        if (__instance.m_securityDoorType != eSecurityDoorType.Security || __instance.DoorType != eLG_DoorType.Security) return;
 
-        var custom = Current.FirstOrDefault(cfg => cfg.Global.Equals(GetGlobalIndexFrom(gate)));
+        var custom = Current.FirstOrDefault(cfg => cfg.GlobalZoneIndex.Equals(GetGlobalIndexFrom(gate)));
         if (custom == null) return;
 
         Transform? crossing = __instance.transform.Find("crossing");
@@ -46,13 +46,13 @@ internal static class Patch_SecurityDoor
             rearInteractionMessage.transform.position = backHandle.transform.position;
             Interact_MessageOnScreen message = rearInteractionMessage.GetComponent<Interact_MessageOnScreen>();
             message.MessageType = eMessageOnScreenType.InteractionPrompt;
-            message.m_message = custom.RearHandleText.ToString();
+            message.m_message = custom.RearHandleText;
 
             rearInteractionMessage.SetActive(true);
             message.SetActive(true);
         }
 
         custom.Identifier.Initialize(__instance, gate, rearInteractionMessage);
-        DSDLogger.Debug($"SEC_DOOR_{__instance.m_serialNumber} setup as {custom.Type}.\n{custom.PrintGlobal()}\n");   
+        DSDLogger.Verbose($"SEC_DOOR_{__instance.m_serialNumber} {custom} setup as {custom.Type}\n");   
     }
 }

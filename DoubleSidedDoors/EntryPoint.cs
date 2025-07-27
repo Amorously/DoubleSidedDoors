@@ -1,39 +1,36 @@
-﻿using DoubleSidedDoors.Module;
-using DoubleSidedDoors.Utils;
+﻿using AmorLib.Dependencies;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
+using DSD.Module;
+using GTFO.API;
 using HarmonyLib;
+using System.Runtime.CompilerServices;
 
-namespace DoubleSidedDoors;
+namespace DSD;
 
 /* TODO:
  * Flipped blood/scream doors
  * Try setup for ProgressionPuzzleToEnter types
  * Doors interactable on both sides
- */
+*/
 
-[BepInPlugin(GUID, NAME, VERSION)]
-[BepInDependency(MTFO.MTFO.GUID, BepInDependency.DependencyFlags.HardDependency)]
+[BepInPlugin("Amor.DoubleSidedDoors", "DoubleSidedDoors", "0.8.0")]
 [BepInDependency("dev.gtfomodding.gtfo-api", BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency(PartialDataUtil.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-public class EntryPoint : BasePlugin
+[BepInDependency("com.dak.MTFO", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("Amor.AmorLib", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency(PData_Wrapper.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInIncompatibility("randomuserhi.DoubleSidedDoors")]
+internal sealed class EntryPoint : BasePlugin
 {
-    public const string GUID = "Amor.DoubleSidedDoors";
-    public const string NAME = "DoubleSidedDoors";
-    public const string VERSION = "0.7.2";
-
     public override void Load()
     {
-        if (IL2CPPChainloader.Instance.Plugins.ContainsKey("randomuserhi.DoubleSidedDoors"))
-        {
-            DSDLogger.Error("OG DoubleSidedDoors present!\nTo prevent potential problems: Please either create a fresh profile or find and delete the old .dll");
-            return;
-        }
+        new Harmony("Amor.DoubleSidedDoors").PatchAll();
+        AssetAPI.OnStartupAssetsLoaded += OnStartupAssetsLoaded;
+        DSDLogger.Info("DSD is done loading!");
+    }
 
-        DSDLogger.Log("Plugin is loaded!");
-        new Harmony(GUID).PatchAll();
-        DSDLogger.Log("Debug is " + (ConfigManager.Debug ? "Enabled" : "Disabled"));
-        
-        DoorBehavior.Init();
+    private void OnStartupAssetsLoaded()
+    {
+        RuntimeHelpers.RunClassConstructor(typeof(DoorConfigManager).TypeHandle);
     }
 }

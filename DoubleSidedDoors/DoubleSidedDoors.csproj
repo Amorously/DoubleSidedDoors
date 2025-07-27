@@ -1,38 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
-
-		<!--
-		Use the following property to set your preferred r2modman profile
-		-->
+		<!-- Use the following property to set your preferred Thunderstore profile to compile in -->
 		<Profile>Plugin Testing</Profile>
 
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<DebugType>None</DebugType>
-		<AssemblyName>$(SolutionName)</AssemblyName>
-		<RootNamespace>$(SolutionName)</RootNamespace>
-		<BepInEx>$(AppData)\r2modmanPlus-local\GTFO\profiles\$(Profile)\BepInEx</BepInEx>
-		<AdditionalIncludes>$(BepInEx)\plugins</AdditionalIncludes>
-		<BuildDirectory>$(BepInEx)\plugins\Amorously-$(SolutionName)\</BuildDirectory>
+		<!-- Thunderstore author's name as in $(BuildDirectory) -->
+		<Author>Amorously</Author>
+
+		<!-- Name of the dll -->
+		<AssemblyName>DoubleSidedDoors</AssemblyName>
+
+		<!-- Mod manager name -->
+		<ModManager>r2modmanPlus-local</ModManager>
+
+		<BepInEx>$(AppData)\$(ModManager)\GTFO\profiles\$(Profile)\BepInEx</BepInEx>
+		<BuildDirectory>$(BepInEx)\plugins\$(Author)-$(SolutionName)\</BuildDirectory>
+		<RootNamespace>DSD</RootNamespace>
 		<OutputPath>$(BuildDirectory)</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Platforms>AnyCPU;x64</Platforms>
+		<TargetFramework>net6</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DebugType>None</DebugType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
 	<Target Name="PostBuild" BeforeTargets="PostBuildEvent">
 		<Delete Files="$(OutputPath)$(AssemblyName).deps.json" />
 	</Target>
 
-	<ItemGroup>
-		<Reference Include="$(AdditionalIncludes)\dakkhuza-MTFO\MTFO.dll" Private="false" />
-		<Reference Include="$(AdditionalIncludes)\**//GTFO-API.dll" Private="false" />
-		<Reference Include="$(BepInEx)\core\0Harmony.dll" Private="false" />
-		<Reference Include="$(BepInEx)\core\BepInEx.Core.dll" Private="false" />
-		<Reference Include="$(BepInEx)\core\BepInEx.Unity.IL2CPP.dll" Private="false" />
-		<Reference Include="$(BepInEx)\core\Il2CppInterop.Common.dll" Private="false" />
-		<Reference Include="$(BepInEx)\core\Il2CppInterop.Runtime.dll" Private="false" />
-		<Reference Include="$(BepInEx)\interop\*.dll" Private="false" />
-	</ItemGroup>
+	<Import Project="Dependencies.props" />
 
 </Project>

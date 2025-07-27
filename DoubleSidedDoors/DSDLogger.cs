@@ -1,20 +1,32 @@
-﻿using BepInEx.Logging;
+﻿using BepInEx.Core.Logging.Interpolation;
+using BepInEx.Logging;
 
-namespace DoubleSidedDoors;
+namespace DSD;
 
 internal static class DSDLogger
 {
-    private readonly static ManualLogSource _logger = Logger.CreateLogSource(EntryPoint.NAME);
+    internal static readonly ManualLogSource MLS;
 
-    public static void Log(string str) => _logger.Log(LogLevel.Message, str);
-
-    public static void Warn(string str) => _logger.Log(LogLevel.Warning, str);
-
-    public static void Error(string str) => _logger.Log(LogLevel.Error, str);
-
-    public static void Debug(string str, bool force = false)
+    static DSDLogger()
     {
-        if (Utils.ConfigManager.Debug || force)
-            _logger.Log(LogLevel.Debug, str);
+        MLS = new("DSD");
+        Logger.Sources.Add(MLS);
+    }
+
+    public static void Info(BepInExInfoLogInterpolatedStringHandler handler) => MLS.LogInfo(handler);
+    public static void Info(string str) => MLS.LogMessage(str);
+    public static void Debug(BepInExDebugLogInterpolatedStringHandler handler) => MLS.LogDebug(handler);
+    public static void Debug(string str) => MLS.LogDebug(str);
+    public static void Error(BepInExErrorLogInterpolatedStringHandler handler) => MLS.LogError(handler);
+    public static void Error(string str) => MLS.LogError(str);
+    public static void Warn(BepInExWarningLogInterpolatedStringHandler handler) => MLS.LogWarning(handler);
+    public static void Warn(string str) => MLS.LogWarning(str);
+
+    public static void Verbose(string str)
+    {
+        if (Configuration.UseVerboseLogs)
+        {
+            Debug(str);
+        }
     }
 }

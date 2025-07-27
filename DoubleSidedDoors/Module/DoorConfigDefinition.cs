@@ -1,24 +1,24 @@
-﻿using DoubleSidedDoors.Utils;
-using GameData;
+﻿using AmorLib.Utils;
+using AmorLib.Utils.JsonElementConverters;
 using LevelGeneration;
 using System.Text.Json.Serialization;
 using UnityEngine;
 
-namespace DoubleSidedDoors.Module;
+namespace DSD.Module;
 
-public sealed class LayoutConfig
+public sealed class DoorConfigDefinition
 {
-    [JsonIgnore]
-    public string Filepath { get; set; } = string.Empty; 
     public uint MainLevelLayout { get; set; }
     public DSDCustomization[] Doors { get; set; } = Array.Empty<DSDCustomization>();
 }
 
-public sealed class DSDCustomization : GlobalIndexBase
+public sealed class DSDCustomization : GlobalBase
 {
     public DSDType Type { get; set; } = DSDType.Flipped;
     public HashSet<HashSet<int>> BindToPlayer { get; set; } = new();
     public LocaleText FrontHandleText { get; set; } = LocaleText.Empty;
+    [JsonPropertyName("FrontHandleTextActiveOverrides")]
+    public eDoorStatus[] FrontHandleTextOverrides { get; set; } = Array.Empty<eDoorStatus>();
     public LocaleText RearHandleText { get; set; } = (LocaleText)"<color=red>BI-DIRECTIONAL ACCESS DISABLED</color>";
     public DoorTriggerOverride TriggerOverride { get; set; } = new();
     public eDoorStatus GraphicStateOverride { get; set; } = eDoorStatus.None;
@@ -37,7 +37,7 @@ public sealed class DSDCustomization : GlobalIndexBase
     }
 }
 
-public sealed class DoorTriggerOverride : GlobalIndexBase
+public sealed class DoorTriggerOverride : GlobalBase
 {
     public bool OpenOnTarget { get; set; } = false;
     public LinkedTriggerType LinkTriggerTo {  get; set; } = LinkedTriggerType.None;
@@ -71,18 +71,5 @@ public sealed class DoorIdentifier
         DoorTransformInstanceID = door.transform.GetInstanceID();
         GateInstanceID = gate.GetInstanceID();            
         TerminalItemInstanceID = door.m_terminalItem.Cast<LG_GenericTerminalItem>().GetInstanceID();            
-    }
-}
-
-public class GlobalIndexBase
-{
-    public GlobalZoneIndex Global { get => new(DimensionIndex, Layer, LocalIndex); }
-    public LG_LayerType Layer { get; set; } = LG_LayerType.MainLayer;
-    public eDimensionIndex DimensionIndex { get; set; } = eDimensionIndex.Reality;
-    public eLocalZoneIndex LocalIndex { get; set; } = eLocalZoneIndex.Zone_0;
-    
-    public string PrintGlobal()
-    {
-        return $"(Dimension: {DimensionIndex}, Layer: {Layer}, LocalIndex: {LocalIndex})";
     }
 }

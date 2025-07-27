@@ -3,17 +3,18 @@ using GameData;
 using HarmonyLib;
 using LevelGeneration;
 using UnityEngine;
-using static DoubleSidedDoors.Module.SharedDoorData;
+using static DSD.Module.DoorConfigManager;
 using Il2CppStringList = Il2CppSystem.Collections.Generic.List<string>;
 
-namespace DoubleSidedDoors.Module.Patches
+namespace DSD.Patches
 {
     [HarmonyPatch]
-    internal static class Patch_SecurityDoorMisc
+    internal static class SecDoorMiscPatches
     {
         [HarmonyPatch(typeof(LG_SecurityDoor), nameof(LG_SecurityDoor.SetNavInfo))]
         [HarmonyPrefix]
-        private static bool SecDoor_NavInfo(LG_SecurityDoor __instance, string infoFwd, string infoBwd, Il2CppStringList infoFwdClean, Il2CppStringList infoBwdClean)
+        [HarmonyWrapSafe]
+        private static bool FlippedNavInfo(LG_SecurityDoor __instance, string infoFwd, string infoBwd, Il2CppStringList infoFwdClean, Il2CppStringList infoBwdClean)
         {
             if (!TryGetCurrentCustomConfig(cfg => cfg.SecDoorInstanceID, __instance.GetInstanceID(), out var custom) || !custom.Flipped) return true;
 
@@ -35,7 +36,8 @@ namespace DoubleSidedDoors.Module.Patches
             typeof(bool)
         })]
         [HarmonyPrefix]
-        private static void CreateChainedPuzzle(ref LG_Area sourceArea, ref LG_Area targetArea, Transform parent)
+        [HarmonyWrapSafe]
+        private static void CreateFlippedChainedPuzzle(ref LG_Area sourceArea, ref LG_Area targetArea, Transform parent)
         {
             if (TryGetCurrentCustomConfig(cfg => cfg.DoorTransformInstanceID, parent.GetInstanceID(), out var custom) && custom.Flipped)
             {
@@ -45,6 +47,7 @@ namespace DoubleSidedDoors.Module.Patches
 
         [HarmonyPatch(typeof(LG_ZoneExpander), nameof(LG_ZoneExpander.GetOppositeArea))]
         [HarmonyPrefix]
+        [HarmonyWrapSafe]
         private static bool GetOppositeArea(LG_ZoneExpander __instance, ref LG_Area __result, LG_Area area)
         {
             if (OnDoorSync)
@@ -61,7 +64,8 @@ namespace DoubleSidedDoors.Module.Patches
 
         [HarmonyPatch(typeof(LG_GenericTerminalItem), nameof(LG_GenericTerminalItem.SpawnNode), MethodType.Setter)]
         [HarmonyPostfix]
-        private static void SetSpawnNode(LG_GenericTerminalItem __instance)
+        [HarmonyWrapSafe]
+        private static void SetFlippedSpawnNode(LG_GenericTerminalItem __instance)
         {
             if (TryGetCurrentCustomConfig(cfg => cfg.TerminalItemInstanceID, __instance.GetInstanceID(), out var custom) && custom.Flipped)
             {
