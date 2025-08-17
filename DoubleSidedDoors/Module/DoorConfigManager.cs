@@ -10,12 +10,23 @@ public static partial class DoorConfigManager
     public static DSDCustomization[] Current { get; private set; } = Array.Empty<DSDCustomization>();
     public static string ModulePath { get; private set; } = string.Empty;
 
-    private static readonly Dictionary<string, HashSet<uint>> _filepathDoorMap = new();
+    private static readonly Dictionary<string, HashSet<uint>> _filepathLayoutMap = new();
     private static readonly Dictionary<uint, DoorConfigDefinition> _customDoorData = new();    
     
     static DoorConfigManager()
     {
         ModulePath = Path.Combine(MTFOPathAPI.CustomPath, "DoubleSidedDoors");
+        Directory.CreateDirectory(ModulePath);
+
+        if (Configuration.CreateTemplate)
+        {
+            string templatePath = Path.Combine(ModulePath, "Template.json");
+            var templateData = new DoorConfigDefinition()
+            {
+                Doors = new DSDCustomization[] { new() }
+            };
+            File.WriteAllText(templatePath, DSDJson.Serialize(templateData, typeof(DoorConfigDefinition)));
+        }
 
         foreach (string customFile in Directory.EnumerateFiles(ModulePath, "*.json", SearchOption.AllDirectories))
         {
@@ -37,7 +48,7 @@ public static partial class DoorConfigManager
 
     private static void ReadFileContent(string file, string content)
     {
-        var layoutSet = _filepathDoorMap.GetOrAddNew(file);
+        var layoutSet = _filepathLayoutMap.GetOrAddNew(file);
 
         foreach (uint id in layoutSet)
         {
@@ -45,14 +56,12 @@ public static partial class DoorConfigManager
         }
         layoutSet.Clear();
 
-        foreach (var data in DSDJson.Deserialize<IEnumerable<DoorConfigDefinition>>(content))
+        var data = DSDJson.Deserialize<DoorConfigDefinition>(content);        
+        if (data != null && data.MainLevelLayout != 0u)
         {
-            if (data != null && data.MainLevelLayout != 0u)
-            {
-                layoutSet.Add(data.MainLevelLayout);
-                _customDoorData[data.MainLevelLayout] = data;
-            }
-        }
+            layoutSet.Add(data.MainLevelLayout);
+            _customDoorData[data.MainLevelLayout] = data;
+        }        
     }
 
     private static void FileCreatedOrChanged(LiveEditEventArgs e)
@@ -69,11 +78,11 @@ public static partial class DoorConfigManager
         DSDLogger.Warn($"LiveEdit File deleted: {e.FullPath}");
         LiveEdit.TryReadFileContent(e.FullPath, (content) =>
         {
-            foreach (uint id in _filepathDoorMap[e.FullPath])
+            foreach (uint id in _filepathLayoutMap[e.FullPath])
             {
                 _customDoorData.Remove(id);
             }
-            _filepathDoorMap.Remove(e.FullPath);
+            _filepathLayoutMap.Remove(e.FullPath);
         });
     }
 

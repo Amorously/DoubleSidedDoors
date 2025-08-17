@@ -1,5 +1,4 @@
-﻿using AmorLib.Dependencies;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using DSD.Module;
 using GTFO.API;
@@ -18,7 +17,6 @@ namespace DSD;
 [BepInDependency("dev.gtfomodding.gtfo-api", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("com.dak.MTFO", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("Amor.AmorLib", BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency(PData_Wrapper.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInIncompatibility("randomuserhi.DoubleSidedDoors")]
 internal sealed class EntryPoint : BasePlugin
 {

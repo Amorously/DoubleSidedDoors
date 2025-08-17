@@ -1,4 +1,5 @@
 ﻿using AmorLib.Utils;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace DSD;
@@ -19,6 +20,7 @@ internal static class DSDJson
 
     public static string Serialize(object value, Type type)
     {
+        _setting.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
         return JsonSerializer.Serialize(value, type, _setting);
     }
 }
