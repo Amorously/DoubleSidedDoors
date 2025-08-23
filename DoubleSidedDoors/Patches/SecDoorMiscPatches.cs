@@ -39,10 +39,12 @@ namespace DSD.Patches
         [HarmonyWrapSafe]
         private static void CreateFlippedChainedPuzzle(ref LG_Area sourceArea, ref LG_Area targetArea, Transform parent)
         {
-            if (TryGetCurrentCustomConfig(cfg => cfg.DoorTransformInstanceID, parent.GetInstanceID(), out var custom) && custom.Flipped)
-            {
+            if (!TryGetCurrentCustomConfig(cfg => cfg.DoorTransformInstanceID, parent.GetInstanceID(), out var custom) || !custom.Flipped) return;
+
+            if (targetArea == null)
+                sourceArea = custom.Identifier.AreaGateLinksTo;
+            else
                 (targetArea, sourceArea) = (sourceArea, targetArea);
-            }
         }
 
         [HarmonyPatch(typeof(LG_ZoneExpander), nameof(LG_ZoneExpander.GetOppositeArea))]
