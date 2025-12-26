@@ -13,7 +13,7 @@ namespace DSD;
  * Doors interactable on both sides
 */
 
-[BepInPlugin("Amor.DoubleSidedDoors", "DoubleSidedDoors", "0.8.0")]
+[BepInPlugin("Amor.DoubleSidedDoors", "DoubleSidedDoors", "0.8.1")]
 [BepInDependency("dev.gtfomodding.gtfo-api", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("com.dak.MTFO", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("Amor.AmorLib", BepInDependency.DependencyFlags.HardDependency)]

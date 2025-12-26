@@ -19,9 +19,11 @@ public sealed class DSDCustomization : GlobalBase
     public LocaleText FrontHandleText { get; set; } = LocaleText.Empty;
     [JsonPropertyName("FrontHandleTextActiveOverrides")]
     public eDoorStatus[] FrontHandleTextOverrides { get; set; } = Array.Empty<eDoorStatus>();
-    public LocaleText RearHandleText { get; set; } = (LocaleText)"<color=red>BI-DIRECTIONAL ACCESS DISABLED</color>";
+    public LocaleText RearHandleText { get; set; } = new("<color=red>BI-DIRECTIONAL ACCESS DISABLED</color>");
     public DoorTriggerOverride TriggerOverride { get; set; } = new();
     public eDoorStatus GraphicStateOverride { get; set; } = eDoorStatus.None;
+    //public bool FlipActiveEnemyWaveData { get; set; } = false;
+    //public bool FlipEventsOnEnter { get; set; } = false;
 
     [JsonIgnore]
     public DoorIdentifier Identifier { get; set; } = new();
@@ -41,6 +43,7 @@ public sealed class DoorTriggerOverride : GlobalBase
 {
     public bool OpenOnTarget { get; set; } = false;
     public LinkedTriggerType LinkTriggerTo {  get; set; } = LinkedTriggerType.None;
+    //public bool UseRearTargetDoor { get; set; } = false;
     [JsonIgnore]
     public LG_SecurityDoor LinkedDoor { get; set; } = new();
     public enum LinkedTriggerType : byte

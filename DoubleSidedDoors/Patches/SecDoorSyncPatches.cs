@@ -38,7 +38,7 @@ internal static class SecDoorSyncPatches
 
     [HarmonyPatch(typeof(LG_SecurityDoor_Locks), nameof(LG_SecurityDoor_Locks.OnDoorState))]
     [HarmonyPostfix]
-    [HarmonyBefore("AWO.Harmony")]
+    [HarmonyPriority(Priority.High)]
     [HarmonyWrapSafe]
     private static void InteractText_OnDoorState(LG_SecurityDoor_Locks __instance, pDoorState state)
     {
